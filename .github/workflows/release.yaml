@@ -63,10 +63,6 @@ jobs:
         run: |
           helm lint ./charts/
 
-      - name: Package helm chart
-        run: |
-          helm package charts/ .
-
       - name: Publish helm chart to Harbor
         run: |
           helm push argocd-project-1.0.0.tgz zkwallet/argocd-project:${{ github.sha }}
