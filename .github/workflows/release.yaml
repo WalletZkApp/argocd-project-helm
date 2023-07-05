@@ -27,7 +27,7 @@ jobs:
 
   release:
     env:
-      HARBOR_REGISTRY_URL: https://harbor.walletzk.app
+      HARBOR_REGISTRY_URL: harbor.walletzk.app
     # depending on default permission settings for your org (contents being read-only or read-write for workloads), you will have to add permissions
     # see: https://docs.github.com/en/actions/security-guides/automatic-token-authentication#modifying-the-permissions-for-the-github_token
     permissions:
@@ -65,4 +65,4 @@ jobs:
 
       - name: Publish helm chart to Harbor
         run: |
-          helm push argocd-project-1.0.0.tgz zkwallet/argocd-project:${{ github.sha }}
+          helm push charts/argocd-project-1.0.0.tgz zkwallet/argocd-project:${{ github.sha }}
