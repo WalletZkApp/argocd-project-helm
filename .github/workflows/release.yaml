@@ -23,6 +23,7 @@ jobs:
           password: ${{ secrets.HARBOR_PASSWORD }}
           registry-url: ${HARBOR_REGISTRY_URL}
           force: true
+          chart-folder: chart
       - name: Checkout
         uses: actions/checkout@v3
         with:

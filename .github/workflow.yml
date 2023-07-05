@@ -5,3 +5,11 @@
     config: cr.yaml
   env:
     CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+ name: Run helm-push
+  uses: bsord/helm-push@v4.1.0
+  with:
+    chart-folder: chart
+  env:
+    username: "${{ secrets.GITHUB_TOKEN }}"
+    password: ${{ secrets.HARBOR_PASSWORD }}
+    registry-url: ${HARBOR_REGISTRY_URL}
