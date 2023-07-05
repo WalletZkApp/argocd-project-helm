@@ -1,0 +1,15 @@
+---
+targetDataCenters:
+  - scaleway
+  - gke
+  - aws
+  - arubacloud
+
+resources:
+  cm-repositories_hook:
+    request:
+      cpu: 10m
+      memory: 50Mi
+    limits:
+      cpu: 1
+      memory: 2Gi
