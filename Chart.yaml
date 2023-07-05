@@ -1,0 +1,7 @@
+---
+apiVersion: v2
+description:
+name: argocd-project
+version: "1.0.0"
+appVersion: "0.0.1"
+icon: "http://null"
