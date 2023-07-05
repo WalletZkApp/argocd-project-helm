@@ -15,15 +15,8 @@ jobs:
     permissions:
       contents: write
     runs-on: ubuntu-latest
+    environment: prod
     steps:
-      - name: Push Helm Chart to ChartMuseum
-        uses: bsord/helm-push@v4.2.0
-        with:
-          username: ${{ secrets.HARBOR_USERNAME }}
-          password: ${{ secrets.HARBOR_PASSWORD }}
-          registry-url: ${HARBOR_REGISTRY_URL}
-          force: true
-          chart-folder: chart
       - name: Checkout
         uses: actions/checkout@v3
         with:
@@ -41,3 +34,15 @@ jobs:
         uses: helm/chart-releaser-action@v1.5.0
         env:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+
+      - name: login to Harbor using helm
+        run: |
+          helm registry login ${{ env.HARBOR_REGISTRY_URL }} --username ${{ secrets.HARBOR_USERNAME }} --password ${{ secrets.HARBOR_PASSWORD }}
+
+      - name: save helm chart to local registry
+        run: |
+          helm chart save ${{ github.workspace }}/src/azure-vote-helm-chart/zkwallet/argocd-project:${{ github.sha }}
+
+      - name: publish chart to Harbor
+        run: |
+          helm chart push zkwallet/argocd-project:${{ github.sha }}
