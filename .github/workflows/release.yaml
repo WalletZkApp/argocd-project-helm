@@ -80,10 +80,15 @@ jobs:
     runs-on: ubuntu-latest
     environment: prod
     steps:
-      - name: Download repository
-        uses: actions/download-artifact@v2
+      - name: Checkout
+        uses: actions/checkout@v2
         with:
-          name: repository
+          fetch-depth: 0
+
+      - name: Configure Git
+        run: |
+          git config user.name "$GITHUB_ACTOR"
+          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
 
       - name: Install Helm
         uses: azure/setup-helm@v1
