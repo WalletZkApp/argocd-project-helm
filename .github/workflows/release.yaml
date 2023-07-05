@@ -2,11 +2,6 @@ name: Push Charts to Harbor
 
 on:
   pull_request:
-    branches:
-      - main
-  push:
-    branches:
-      - main
 
 jobs:
   release:
@@ -30,7 +25,41 @@ jobs:
           git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
 
       - name: Install Helm
-        uses: azure/setup-helm@v3
+        uses: azure/setup-helm@v
+        with:
+          version: v3.8.1
+
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
+      
+      - name: Set up chart-testing
+        uses: helm/chart-testing-action@v2.2.1
+
+        - name: Run chart-testing (list-changed)
+        id: list-changed
+        run: |
+          changed=$(ct list-changed --config .github/chart-testing-config.yml)
+          if [[ -n "$changed" ]]; then
+            echo "::set-output name=changed::true"
+          fi
+
+      - name: Run chart-testing (lint)
+        run: ct lint --config .github/chart-testing-config.yml
+
+      - name: Create kind cluster
+        uses: helm/kind-action@v1.2.0
+        with:
+          version: v0.12.0
+          node_image: kindest/node:v1.23.5
+          # kubectl_version: v1.23.6
+        if: steps.list-changed.outputs.changed == 'true'
+
+      - name: Run chart-testing (install)
+        run: ct install --config .github/chart-testing-config.yml
+
+      - name: Run chart-testing (upgrade)
+        run: ct install --upgrade --config .github/chart-testing-config.yml
 
       - name: Helm Chart Releaser
         uses: helm/chart-releaser-action@v1.5.0
@@ -43,8 +72,8 @@ jobs:
 
       - name: save helm chart to local registry
         run: |
-          helm chart save ${{ github.workspace }}/src/azure-vote-helm-chart/zkwallet/argocd-project:${{ github.sha }}
+          helm package ${{ github.workspace }}/src/azure-vote-helm-chart/zkwallet/argocd-project:${{ github.sha }}
 
       - name: publish chart to Harbor
         run: |
-          helm chart push zkwallet/argocd-project:${{ github.sha }}
+          helm push zkwallet/argocd-project:${{ github.sha }}
