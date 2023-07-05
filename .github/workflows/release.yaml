@@ -27,7 +27,8 @@ jobs:
 
   release:
     env:
-      HARBOR_REGISTRY_URL: harbor.walletzk.app
+      HARBOR_REGISTRY_URL: oci://harbor.walletzk.app
+      HELM_EXPERIMENTAL_OCI: 1
     # depending on default permission settings for your org (contents being read-only or read-write for workloads), you will have to add permissions
     # see: https://docs.github.com/en/actions/security-guides/automatic-token-authentication#modifying-the-permissions-for-the-github_token
     permissions:
@@ -58,17 +59,11 @@ jobs:
       - name: Login to Harbor using helm
         run: |
           helm registry login ${{ env.HARBOR_REGISTRY_URL }} --username ${{ secrets.HARBOR_USERNAME }} --password ${{ secrets.HARBOR_PASSWORD }}
-        env:
-          HELM_EXPERIMENTAL_OCI: 1
 
       - name: Lint helm chart
         run: |
           helm lint ./charts/
-        env:
-          HELM_EXPERIMENTAL_OCI: 1
 
       - name: Publish helm chart to Harbor
         run: |
           helm push charts/argocd-project-1.0.0.tgz ${{ env.HARBOR_REGISTRY_URL }}/zkwallet/argocd-project:${{ github.sha }}
-        env:
-          HELM_EXPERIMENTAL_OCI: 1
