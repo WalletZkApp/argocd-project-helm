@@ -16,8 +16,8 @@ jobs:
       contents: write
     runs-on: ubuntu-latest
     steps:
-      - name: Helm Push
-        uses: bsord/helm-push@v4.1.0
+      - name: Push Helm Chart to ChartMuseum
+        uses: bsord/helm-push@v4.2.0
         with:
           username: ${{ secrets.HARBOR_USERNAME }}
           password: ${{ secrets.HARBOR_PASSWORD }}
