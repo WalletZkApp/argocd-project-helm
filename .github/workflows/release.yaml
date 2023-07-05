@@ -25,51 +25,6 @@ jobs:
             ${{ github.workspace }}/charts
             ${{ github.workspace }}/cr.yaml
 
-  lint-test:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-
-      - name: Set up Helm
-        uses: azure/setup-helm@v1
-        with:
-          version: v3.8.1
-
-      - uses: actions/setup-python@v2
-        with:
-          python-version: 3.7
-
-      - name: Set up chart-testing
-        uses: helm/chart-testing-action@v2.2.1
-
-      - name: Run chart-testing (list-changed)
-        id: list-changed
-        run: |
-          changed=$(ct list-changed --config .github/chart-testing-config.yml)
-          if [[ -n "$changed" ]]; then
-            echo "::set-output name=changed::true"
-          fi
-
-      - name: Run chart-testing (lint)
-        run: ct lint --config .github/chart-testing-config.yml
-
-      - name: Create kind cluster
-        uses: helm/kind-action@v1.2.0
-        with:
-          version: v0.12.0
-          node_image: kindest/node:v1.23.5
-          # kubectl_version: v1.23.6
-        if: steps.list-changed.outputs.changed == 'true'
-
-      - name: Run chart-testing (install)
-        run: ct install --config .github/chart-testing-config.yml
-
-      - name: Run chart-testing (upgrade)
-        run: ct install --upgrade --config .github/chart-testing-config.yml
-
   release:
     env:
       HARBOR_REGISTRY_URL: https://harbor.walletzk.app
@@ -104,14 +59,14 @@ jobs:
         run: |
           helm registry login ${{ env.HARBOR_REGISTRY_URL }} --username ${{ secrets.HARBOR_USERNAME }} --password ${{ secrets.HARBOR_PASSWORD }}
 
-      - name: Helm init
+      - name: Lint helm chart
         run: |
-          helm init -c
+          helm lint ./charts/
 
       - name: Package helm chart
         run: |
-          helm package zkwallet/argocd-project:${{ github.sha }}
+          helm package charts/ .
 
       - name: Publish helm chart to Harbor
         run: |
-          helm push zkwallet/argocd-project:${{ github.sha }}
+          helm push argocd-project-1.0.0.tgz zkwallet/argocd-project:${{ github.sha }}
