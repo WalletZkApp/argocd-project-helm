@@ -16,8 +16,8 @@ jobs:
       contents: write
     runs-on: ubuntu-latest
     steps:
-      - name: Push Helm Chart to Harbor
-        uses: bsord/helm-push@4.1.0
+      - name: Helm Push
+        uses: bsord/helm-push@v4.1.0
         with:
           username: ${{ secrets.HARBOR_USERNAME }}
           password: ${{ secrets.HARBOR_PASSWORD }}
@@ -36,7 +36,7 @@ jobs:
       - name: Install Helm
         uses: azure/setup-helm@v3
 
-      - name: Run chart-releaser
-        uses: helm/chart-releaser-action@v1.6.0
+      - name: Helm Chart Releaser
+        uses: helm/chart-releaser-action@v1.5.0
         env:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
