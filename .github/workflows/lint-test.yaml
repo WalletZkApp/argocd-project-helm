@@ -16,6 +16,10 @@ jobs:
         with:
           version: v3.8.1
 
+      - name: Lint helm chart
+        run: |
+          helm lint ./charts/
+
       - uses: actions/setup-python@v2
         with:
           python-version: 3.7

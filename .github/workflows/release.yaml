@@ -60,10 +60,6 @@ jobs:
         run: |
           helm registry login https://${{ env.HARBOR_REGISTRY_URL }} --username ${{ secrets.HARBOR_USERNAME }} --password ${{ secrets.HARBOR_PASSWORD }}
 
-      - name: Lint helm chart
-        run: |
-          helm lint ./charts/
-
       - name: Publish helm chart to Harbor
         run: |
-          helm push charts/argocd-project-1.0.0.tgz oci://${{ env.HARBOR_REGISTRY_URL }}/zkwallet/argocd-project:${{ github.sha }}
+          helm push charts/argocd-project-1.0.0.tgz oci://${{ env.HARBOR_REGISTRY_URL }}/zkwallet/argocd-project
