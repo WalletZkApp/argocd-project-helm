@@ -69,6 +69,6 @@ jobs:
 
       - name: Publish helm chart to Harbor
         run: |
-          helm push charts/argocd-project-1.0.0.tgz zkwallet/argocd-project:${{ github.sha }}
+          helm push charts/argocd-project-1.0.0.tgz ${{ env.HARBOR_REGISTRY_URL }}/zkwallet/argocd-project:${{ github.sha }}
         env:
           HELM_EXPERIMENTAL_OCI: 1
